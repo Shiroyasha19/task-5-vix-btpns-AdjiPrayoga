@@ -1,4 +1,4 @@
-module github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga
+module github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga
 
 go 1.17
 

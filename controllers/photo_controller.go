@@ -6,16 +6,16 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga/app"
+	"github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga/app/auth"
+	"github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga/helpers/formaterror"
+	"github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga/models"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga/app/auth"
-	"github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga/app"
-	"github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga/helpers/formaterror"
-	"github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga/models"
 )
 
-//Menampilkan semua photo
-func GetPhoto(c *gin.Context){
+// Menampilkan semua photo
+func GetPhoto(c *gin.Context) {
 	//Membuat list object photo untuk menyimpan data photo yang akan ditampilkan
 	photos := []models.Photo{}
 
@@ -47,7 +47,7 @@ func GetPhoto(c *gin.Context){
 	c.JSON(http.StatusOK, gin.H{"status": "T", "message": "success", "data": photos})
 }
 
-//Create photo profile
+// Create photo profile
 func CreatePhoto(c *gin.Context) {
 	//set database
 	db := c.MustGet("db").(*gorm.DB)
@@ -68,7 +68,7 @@ func CreatePhoto(c *gin.Context) {
 	//Mengambil data user yang login melalui token jwt
 	var user_login models.User
 
-	err = db.Debug().Where("email = ?", email).First(&user_login).Error;
+	err = db.Debug().Where("email = ?", email).First(&user_login).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "F", "message": "user not found", "data": nil})
 		return
@@ -92,9 +92,9 @@ func CreatePhoto(c *gin.Context) {
 	photo_input.Initialize()
 	photo_input.UserId = user_login.ID
 	photo_input.Author = app.Author{
-		ID: user_login.ID,
+		ID:       user_login.ID,
 		Username: user_login.Username,
-		Email: user_login.Email,
+		Email:    user_login.Email,
 	}
 
 	//Melakukan validasi data photo
@@ -107,7 +107,7 @@ func CreatePhoto(c *gin.Context) {
 	//Melakukan pengecekan apakah user sudah mengupload photo, jika sudah ada maka akan membuat photo
 	var old_photo models.Photo
 	err = db.Debug().Model(&models.Photo{}).Where("user_id = ?", user_login.ID).Find(&old_photo).Error
-	if err != nil{
+	if err != nil {
 		if err.Error() == "record not found" {
 			//Melakukan create photo ke database
 			err = db.Debug().Create(&photo_input).Error
@@ -131,13 +131,13 @@ func CreatePhoto(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "F", "message": formattedError.Error(), "data": nil})
 		return
 	}
-	
+
 	//Response succes
 	c.JSON(http.StatusOK, gin.H{"status": "T", "message": "success change photo", "data": photo_input})
-	
+
 }
 
-//Melakukan update photo profile
+// Melakukan update photo profile
 func UpdatePhoto(c *gin.Context) {
 	//Set database
 	db := c.MustGet("db").(*gorm.DB)
@@ -157,12 +157,12 @@ func UpdatePhoto(c *gin.Context) {
 
 	//Mengambil data user yang login melalui token jwt
 	var user_login models.User
-	
+
 	err = db.Debug().Where("email = ?", email).First(&user_login).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "F", "message": "user not found", "data": nil})
 		return
-	}	
+	}
 
 	// Membaca data body
 	body, err := ioutil.ReadAll(c.Request.Body)
@@ -171,7 +171,7 @@ func UpdatePhoto(c *gin.Context) {
 	}
 
 	//Mengubah json menjadi object Photo
-	photo_input:= models.Photo{}
+	photo_input := models.Photo{}
 	err = json.Unmarshal(body, &photo_input)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": "F", "message": err.Error(), "data": nil})
@@ -197,7 +197,6 @@ func UpdatePhoto(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "F", "message": "no access to change photo", "data": nil})
 		return
 	}
-	
 
 	//Melakukan update photo ke database
 	err = db.Model(&photo).Updates(&photo_input).Error
@@ -209,16 +208,16 @@ func UpdatePhoto(c *gin.Context) {
 
 	//Custom response data
 	photo.Author = app.Author{
-		ID: user_login.ID,
+		ID:       user_login.ID,
 		Username: user_login.Username,
-		Email: user_login.Email,
+		Email:    user_login.Email,
 	}
 
 	//Response success
 	c.JSON(http.StatusOK, gin.H{"status": "T", "message": "success change photo", "data": photo})
 }
 
-//Menghapus photo profile
+// Menghapus photo profile
 func DeletePhoto(c *gin.Context) {
 
 	//Set database
@@ -242,7 +241,7 @@ func DeletePhoto(c *gin.Context) {
 	if err := db.Debug().Where("email = ?", email).First(&user_login).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "F", "message": "user not found", "data": nil})
 		return
-	}	
+	}
 
 	//Pengecekan foto berdasarkan id
 	var photo models.Photo
@@ -267,4 +266,3 @@ func DeletePhoto(c *gin.Context) {
 	//Response success
 	c.JSON(http.StatusOK, gin.H{"status": "T", "message": "delete photo success", "data": nil})
 }
-

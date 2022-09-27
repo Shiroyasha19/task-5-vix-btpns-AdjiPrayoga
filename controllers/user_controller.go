@@ -6,17 +6,17 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga/app"
+	"github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga/app/auth"
+	"github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga/helpers/formaterror"
+	"github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga/helpers/hash"
+	"github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga/models"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
-	"github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga/app"
-	"github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga/app/auth"
-	"github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga/helpers/formaterror"
-	"github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga/helpers/hash"
-	"github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
-//Register data User
+// Register data User
 func CreateUser(c *gin.Context) {
 	//set database
 	db := c.MustGet("db").(*gorm.DB)
@@ -45,7 +45,6 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-
 	//Melakukan Hash password
 	err = user_input.HashPassword()
 	if err != nil {
@@ -62,9 +61,9 @@ func CreateUser(c *gin.Context) {
 
 	//Custom response data
 	data := app.UserRegister{
-		ID: user_input.ID,
-		Username: user_input.Username,
-		Email: user_input.Email,
+		ID:        user_input.ID,
+		Username:  user_input.Username,
+		Email:     user_input.Email,
 		CreatedAt: user_input.CreatedAt,
 		UpdatedAt: user_input.UpdatedAt,
 	}
@@ -73,7 +72,7 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "T", "message": "register user success", "data": data})
 }
 
-//Update data user
+// Update data user
 func UpdateUser(c *gin.Context) {
 
 	//Set database
@@ -125,9 +124,9 @@ func UpdateUser(c *gin.Context) {
 
 	//Custom response data
 	data := app.UserRegister{
-		ID: user_input.ID,
-		Username: user_input.Username,
-		Email: user_input.Email,
+		ID:        user_input.ID,
+		Username:  user_input.Username,
+		Email:     user_input.Email,
 		CreatedAt: user_input.CreatedAt,
 		UpdatedAt: user_input.UpdatedAt,
 	}
@@ -136,15 +135,15 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "T", "message": "update user success", "data": data})
 }
 
-//Menghapus data user
+// Menghapus data user
 func DeleteUser(c *gin.Context) {
 
-	//Set databse 
+	//Set databse
 	db := c.MustGet("db").(*gorm.DB)
 
 	//Melakukan cek apakah data yang ingin dihapus ada berdasarkan user id dari param
 	var user models.User
-	
+
 	err := db.Debug().Where("id = ?", c.Param("userId")).First(&user).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "F", "message": "user not found", "data": nil})
@@ -162,7 +161,7 @@ func DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "T", "message": "delete user success", "data": nil})
 }
 
-//Melakukan login
+// Melakukan login
 func Login(c *gin.Context) {
 	//Set database
 	db := c.MustGet("db").(*gorm.DB)
@@ -189,12 +188,12 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": "F", "message": err.Error(), "data": nil})
 		return
 	}
-	
+
 	//Melakukan pengecekan user di database berdasarkan email
 	var user_login app.UserLogin
-	
+
 	err = db.Debug().Table("users").Select("*").Joins("left join photos on photos.user_id = users.id").
-	Where("users.email = ?", user_input.Email).Find(&user_login).Error;
+		Where("users.email = ?", user_input.Email).Find(&user_login).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "F", "message": "user not found", "data": nil})
 		return

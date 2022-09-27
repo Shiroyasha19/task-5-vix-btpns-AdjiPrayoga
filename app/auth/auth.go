@@ -6,18 +6,20 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 )
+
 var jwtKey = []byte("supersecretkey")
+
 type JWTClaim struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	jwt.StandardClaims
 }
 
-//Membuat token jwt
+// Membuat token jwt
 func GenerateJWT(email string, username string) (tokenString string, err error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
-	claims:= &JWTClaim{
-		Email: email,
+	claims := &JWTClaim{
+		Email:    email,
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
@@ -28,7 +30,7 @@ func GenerateJWT(email string, username string) (tokenString string, err error) 
 	return
 }
 
-//Untuk validasi token
+// Untuk validasi token
 func ValidateToken(signedToken string) (err error) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,
@@ -52,7 +54,7 @@ func ValidateToken(signedToken string) (err error) {
 	return
 }
 
-//Untuk mengambil data email berdasarkan token user yang login
+// Untuk mengambil data email berdasarkan token user yang login
 func GetEmail(signedToken string) (email string, err error) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,

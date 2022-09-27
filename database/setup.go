@@ -5,23 +5,23 @@ import (
 	"log"
 	"os"
 
+	"github.com/Shiroyasha19/task-5-vix-btpns-AdjiPrayoga/models"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
-	"github.com/wahyuucandra/task-5-vix-btpns-AdjiPrayoga/models"
 )
 
-//Melakukan set up database berdasarkan env dan menyambungkan dengan db postgre sql
+// Melakukan set up database berdasarkan env dan menyambungkan dengan db postgre sql
 func SetupDB() *gorm.DB {
-	
+
 	godotenv.Load(".env")
-	
-	DB_HOST 	:= os.Getenv("DB_HOST")
-	DB_DRIVER 	:= os.Getenv("DB_DRIVER")
-	DB_USER 	:= os.Getenv("DB_USER")
+
+	DB_HOST := os.Getenv("DB_HOST")
+	DB_DRIVER := os.Getenv("DB_DRIVER")
+	DB_USER := os.Getenv("DB_USER")
 	DB_PASSWORD := os.Getenv("DB_PASSWORD")
-	DB_NAME		:= os.Getenv("DB_NAME")
-	DB_PORT     := os.Getenv("DB_PORT")
+	DB_NAME := os.Getenv("DB_NAME")
+	DB_PORT := os.Getenv("DB_PORT")
 
 	URL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", DB_HOST, DB_PORT, DB_USER, DB_NAME, DB_PASSWORD)
 	db, err := gorm.Open("postgres", URL)
@@ -41,6 +41,6 @@ func SetupDB() *gorm.DB {
 	if err != nil {
 		log.Fatalf("attaching foreign key error: %v", err)
 	}
-	
+
 	return db
 }
